@@ -1,0 +1,14 @@
+{
+  "name": "nasdaq_data",
+  "version": "0.0.1",
+  "description": "provide NASDAQ data",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "NASDAQ"
+  ],
+  "author": "Sukitti (Troy)",
+  "license": "ISC"
+}

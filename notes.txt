@@ -1,0 +1,3 @@
+POST
+http://www.nasdaq.com/
+http://www.nasdaq.com/aspx/IndexData.ashx
