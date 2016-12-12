@@ -2,6 +2,8 @@
 
 var request = require('request');
 
+function reqNasdaqVal() {
+
 /// Make a POST request to NASDAQ.com
 request({
 	url: 'http://www.nasdaq.com',
@@ -29,3 +31,7 @@ request({
     /// 4th value is NASDAQ's changed value in %
 	}
 });
+
+};
+
+module.exports = reqNasdaqVal;
