@@ -1,5 +1,4 @@
 var request = require('supertest');
-var mocha		= require('mocha');
 app = require('../server');
 
 describe('GET /api/T002', function() {

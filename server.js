@@ -14,33 +14,24 @@ var app = express();
 /// Do request Nasdaq Value
 var reqNasdaqVal = require('./js/get-nasdaq.js');
 
-function recordToDatabase(vals) {
-	console.log('save to database:', vals);
+/// Do record to database
+var recToDatabase = require('./js/recordToDatabase');
 
-	var t002 = new T002();
-	t002.value = vals.value;
-	t002.change = vals.change;
-	t002.percentchange = vals.percentchange;
-	t002.date = vals.date;
-
-	/// Save the t002 and check for errors
-	t002.save(function(err) {
-		if (err) {
-			console.log(err); 
-		}
-		else {
-			console.log({message: 'T002 created!'});
-		}
-	});
-
-};
+console.log('recToDatabase.dbModel', recToDatabase.dbModel);
 
 function recordVal(cb) {
 	reqNasdaqVal(cb);
 }
 
+/// Call back function that is called after recordVal function is finished.
+/// This function will call the function to record the value to database.
+function cb(vals) {
+	// Needs database obj (vals) and database model (T002)
+	recToDatabase(vals, T002)
+}
+
 setInterval(function() {
-	recordVal(recordToDatabase);
+	recordVal(cb);
 }, config.intervalTimeToGetData);
 
 
