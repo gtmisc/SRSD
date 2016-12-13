@@ -17,8 +17,6 @@ var reqNasdaqVal = require('./js/get-nasdaq.js');
 /// Do record to database
 var recToDatabase = require('./js/recordToDatabase');
 
-console.log('recToDatabase.dbModel', recToDatabase.dbModel);
-
 function recordVal(cb) {
 	reqNasdaqVal(cb);
 }
