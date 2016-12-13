@@ -10,7 +10,6 @@ var mongoose = require('mongoose');
 var T002 = require('./models/t002');	// the defined Nasdaq Value model
 
 var app = express();
-app.use(morgan('dev'));		// log every request to the console
 
 /// Do request Nasdaq Value
 var reqNasdaqVal = require('./js/get-nasdaq.js');
@@ -55,7 +54,6 @@ var router = express.Router();
 
 /// Router Middleware
 router.use(function routerMWare(req, res, next) {
-	console.log('Router Middleware');
 	next();	// don't stop by moving to next route
 });
 
@@ -100,7 +98,7 @@ router.route('/T002')
 		});
 	});
 
-router.route('/T002_All')
+router.route('/T002/all')
 	.get(function(req, res) {
 		T002.find(function(err, t002s) {
 			if (err) {
@@ -112,7 +110,7 @@ router.route('/T002_All')
 		});
 	});
 
-router.route('/T002_Last')
+router.route('/T002/latest')
 	.get(function(req, res) {
 		T002.find(function(err, t002s) {
 			if (err) {
@@ -135,17 +133,18 @@ if (process.env.NODE_ENV === 'test') {
 	port = config.test_port;
 }
 else {
+	app.use(morgan('dev'));		// log every request to the console
 	db = mongoose.connect(config.db);
 	port = config.port;
+
+	// Check database connection
+	mongoose.connection.on('connected', function() {
+		console.log('Mongoose default connection is open to', (process.env.NODE_ENV === 'test' ? config.test_db : config.db));
+	});
 }
 app.listen(port, function(err) {
 	if (err) console.log(err);
 	console.log('Server is listening on port', port);
-});
-
-/// Check database connection
-mongoose.connection.on('connected', function() {
-	console.log('Mongoose default connection is open to', (process.env.NODE_ENV === 'test' ? config.test_db : config.db));
 });
 
 // Export server
