@@ -1,14 +1,17 @@
 /// Base Setup
 var express			= require('express');
 var bodyParser	= require('body-parser');
+var morgan			= require('morgan');
 var exports = module.exports = {};
-var app = express();
 
 var config = require('./app/config');
 
 /// Use MongoDB
 var mongoose = require('mongoose');
 var T002 = require('./models/t002');	// the defined Nasdaq Value model
+
+var app = express();
+app.use(morgan('dev'));		// log every request to the console
 
 /// Do request Nasdaq Value
 var reqNasdaqVal = require('./js/get-nasdaq.js');
@@ -44,8 +47,8 @@ setInterval(function() {
 
 
 /// Use body-parser for getting data from a POST
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));	// parse application/x-www-form-urlencoded
+app.use(bodyParser.json());												// parse application/json
 
 
 /// Routes for API
@@ -127,18 +130,24 @@ router.route('/T002_Last')
 app.use('/api', router);
 
 /// Set database and start the server
-var server;
-var db;
+var db, port;
 if (process.env.NODE_ENV === 'test') {
 	db = mongoose.connect(config.test_db);
-	server = app.listen(config.test_port);
-	console.log('Server is listening on port', config.test_port);
+	port = config.test_port;
 }
 else {
 	db = mongoose.connect(config.db);
-	server = app.listen(config.port);
-	console.log('Server is listening on port', config.port);
+	port = config.port;
 }
+var server = app.listen(port, function(err) {
+	if (err) console.log(err);
+	console.log('Server is listening on port', port);
+});
+
+/// Check database connection
+mongoose.connection.on('connected', function() {
+	console.log('Mongoose default connection is open to', (process.env.NODE_ENV === 'test' ? config.test_db : config.db));
+});
 
 /// Export server.close
 exports.closeServer = function() {
