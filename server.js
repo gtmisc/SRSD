@@ -2,7 +2,6 @@
 var express			= require('express');
 var bodyParser	= require('body-parser');
 var morgan			= require('morgan');
-var exports = module.exports = {};
 
 var config = require('./app/config');
 
@@ -139,7 +138,7 @@ else {
 	db = mongoose.connect(config.db);
 	port = config.port;
 }
-var server = app.listen(port, function(err) {
+app.listen(port, function(err) {
 	if (err) console.log(err);
 	console.log('Server is listening on port', port);
 });
@@ -149,7 +148,5 @@ mongoose.connection.on('connected', function() {
 	console.log('Mongoose default connection is open to', (process.env.NODE_ENV === 'test' ? config.test_db : config.db));
 });
 
-/// Export server.close
-exports.closeServer = function() {
-	server.close();
-};
+// Export server
+module.exports = app;
