@@ -1,5 +1,6 @@
 var mongoose	= require('mongoose');
 
+/// Define schema for NASDAQ Values
 var t002Schema = new mongoose.Schema({
 	value: Number,
 	change: Number,
@@ -10,4 +11,5 @@ var t002Schema = new mongoose.Schema({
 	}
 });
 
+// Export the model
 module.exports = mongoose.model('T002', t002Schema);

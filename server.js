@@ -3,12 +3,11 @@ var express			= require('express');
 var bodyParser	= require('body-parser');
 var exports = module.exports = {};
 var app = express();
-var port = 8000;
-var intervalTimeToGetData = 60000;
+
+var config = require('./app/config');
 
 /// Use MongoDB
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/T002');
 var T002 = require('./models/t002');	// the defined Nasdaq Value model
 
 /// Do request Nasdaq Value
@@ -41,7 +40,7 @@ function recordVal(cb) {
 
 setInterval(function() {
 	recordVal(recordToDatabase);
-}, intervalTimeToGetData);
+}, config.intervalTimeToGetData);
 
 
 /// Use body-parser for getting data from a POST
@@ -127,12 +126,21 @@ router.route('/T002_Last')
 /// All routes will be prefixed with /api
 app.use('/api', router);
 
+/// Set database and start the server
+var server;
+var db;
+if (process.env.NODE_ENV === 'test') {
+	db = mongoose.connect(config.test_db);
+	server = app.listen(config.test_port);
+	console.log('Server is listening on port', config.test_port);
+}
+else {
+	db = mongoose.connect(config.db);
+	server = app.listen(config.port);
+	console.log('Server is listening on port', config.port);
+}
 
-var server = app.listen(port, function() {
-	console.log('Server is listening on port', port);
-});
-
-/// Start the server
+/// Export server.close
 exports.closeServer = function() {
 	server.close();
 };
