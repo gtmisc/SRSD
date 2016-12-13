@@ -4,16 +4,43 @@ var bodyParser	= require('body-parser');
 var exports = module.exports = {};
 var app = express();
 var port = 8000;
-var intervalTimeToGetData = 10000;
+var intervalTimeToGetData = 5000;
 
 /// Use MongoDB
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/T001');
-var T001 = require('./models/t001');	// the defined Nasdaq Value model
+mongoose.connect('mongodb://localhost:27017/T002');
+var T002 = require('./models/t002');	// the defined Nasdaq Value model
 
 /// Do request Nasdaq Value
 var reqNasdaqVal = require('./js/get-nasdaq.js');
-setInterval(reqNasdaqVal, intervalTimeToGetData);
+
+function recordToDatabase(vals) {
+	console.log('save to database:', vals);
+
+	var t002 = new T002();
+	t002.value = vals.value;
+	t002.change = vals.change;
+	t002.percentchange = vals.percentchange;
+
+	/// Save the t002 and check for errors
+	t002.save(function(err) {
+		if (err) {
+			console.log(err); 
+		}
+		else {
+			console.log({message: 'T002 created!'});
+		}
+	});
+
+};
+
+function recordVal(cb) {
+	reqNasdaqVal(cb);
+}
+
+setInterval(function() {
+	recordVal(recordToDatabase);
+}, intervalTimeToGetData);
 
 
 /// Use body-parser for getting data from a POST
@@ -36,56 +63,61 @@ router.get('/', function(req, res) {
 });
 
 /// Routes for accessing NASDAQ Values
-router.route('/T001')
+router.route('/T002')
 	.post(function(req, res) {
-		console.log('entering creating a T001');
-		var t001 = new T001();
-		t001.name = req.body.name;
+		console.log('entering creating a T002');
+		var t002 = new T002();
+		t002.value = req.body.value;
+		t002.change = req.body.change;
+		t002.percentchange = req.body.percentchange;
+		if (t002.change < 0) {
+			t002.percentchange *= -1;
+		}
 
-		console.log(t001);
+		console.log(t002);
 
-		/// Save the t001 and check for errors
-		t001.save(function(err) {
+		/// Save the t002 and check for errors
+		t002.save(function(err) {
 			if (err) {
 				res.send(err); 
 			}
 			else {
-				res.json({message: 'T001 created!'});
+				res.json({message: 'T002 created!'});
 			}
 		});
 	})
 
 	.get(function(req, res) {
-		T001.find(function(err, t001s) {
+		T002.find(function(err, t002s) {
 			if (err) {
 				res.send(err);
 			}
 			else {
-				res.json(t001s);
+				res.json(t002s);
 			}
 		});
 	});
 
-router.route('/T001_All')
+router.route('/T002_All')
 	.get(function(req, res) {
-		T001.find(function(err, t001s) {
+		T002.find(function(err, t002s) {
 			if (err) {
 				res.send(err);
 			}
 			else {
-				res.json(t001s);
+				res.json(t002s);
 			}
 		});
 	});
 
-router.route('/T001_Last')
+router.route('/T002_Last')
 	.get(function(req, res) {
-		T001.find(function(err, t001s) {
+		T002.find(function(err, t002s) {
 			if (err) {
 				res.send(err);
 			}
 			else {
-				res.json(t001s[t001s.length - 1]);
+				res.json(t002s[t002s.length - 1]);
 			}
 		});
 	});
