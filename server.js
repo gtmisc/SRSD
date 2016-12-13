@@ -4,7 +4,7 @@ var bodyParser	= require('body-parser');
 var exports = module.exports = {};
 var app = express();
 var port = 8000;
-var intervalTimeToGetData = 5000;
+var intervalTimeToGetData = 60000;
 
 /// Use MongoDB
 var mongoose = require('mongoose');
@@ -21,6 +21,7 @@ function recordToDatabase(vals) {
 	t002.value = vals.value;
 	t002.change = vals.change;
 	t002.percentchange = vals.percentchange;
+	t002.date = vals.date;
 
 	/// Save the t002 and check for errors
 	t002.save(function(err) {

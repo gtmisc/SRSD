@@ -9,6 +9,8 @@ function reqNasdaqVal(cb) {
   	url: 'http://www.nasdaq.com',
   	method: 'POST'
   }, function(err, resp, body) {
+    var date = Date.now();
+
   	if (err) {
   		console.log(err);
   	}
@@ -38,7 +40,8 @@ function reqNasdaqVal(cb) {
       var nasdaqVals = {
         value,
         change,
-        percentchange
+        percentchange,
+        date
       };
 
       // Call the call back function with the retrieved values
