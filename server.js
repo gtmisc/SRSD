@@ -45,42 +45,12 @@ router.get('/', function(req, res) {
 	res.json({message: 'Welcome to Nasdaq Values'});
 });
 
-/// Routes for accessing NASDAQ Values
 
-/*
-router.route('/T002')
-	.post(function(req, res) {
-		var t002 = new T002();
-		t002.value = req.body.value;
-		t002.change = req.body.change;
-		t002.percentchange = req.body.percentchange;
-		if (t002.change < 0) {
-			t002.percentchange *= -1;
-		}
+///============================================================================
+/// START: Routes for accessing NASDAQ Values
+///----------------------------------------------------------------------------
 
-		/// Save the t002 and check for errors
-		t002.save(function(err) {
-			if (err) {
-				res.send(err); 
-			}
-			else {
-				res.json({message: 'T002 created!'});
-			}
-		});
-	})
-
-	.get(function(req, res) {
-		T002.find(function(err, t002s) {
-			if (err) {
-				res.send(err);
-			}
-			else {
-				res.json(t002s);
-			}
-		});
-	});
-//*/
-
+/// GET all records
 router.route('/T002/all')
 	.get(function(req, res) {
 		T002.find(function(err, t002s) {
@@ -93,6 +63,7 @@ router.route('/T002/all')
 		});
 	});
 
+/// GET the latest values
 router.route('/T002/latest')
 	.get(function(req, res) {
 		T002.find(function(err, t002s) {
@@ -104,6 +75,33 @@ router.route('/T002/latest')
 			}
 		});
 	});
+
+/// POST for records between two datetimes
+router.route('/T002/daterange')
+	.post(function(req, res) {
+
+		var fromDT	= !!req.body.from ? new Date(req.body.from) : new Date('1970');
+		var toDT 		= !!req.body.to   ? new Date(req.body.to)   : new Date();
+
+		console.log('from:', fromDT);
+		console.log('to:', toDT);
+
+
+		/// Find ... and check for errors
+		T002.find({
+			date: {
+				$gte: fromDT,
+				$lte: toDT
+			}
+		}, function(err, t002s) {
+			if (err) {
+				res.send(err); 
+			}
+			else {
+				res.json(t002s);
+			}
+		});
+	})
 
 /// Set port and database to connect
 var dbc, port;
@@ -117,6 +115,11 @@ else {
 	port = config.port;
 
 }
+
+///----------------------------------------------------------------------------
+/// END: Routes for accessing NASDAQ Values
+///============================================================================
+
 
 /// Connect to database
 mongoose.connect(dbc);
