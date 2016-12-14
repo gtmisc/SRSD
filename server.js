@@ -21,25 +21,19 @@ function recordVal(cb) {
 	reqNasdaqVal(cb);
 }
 
-/// Call back function that is called after recordVal function is finished.
+/// Callback function that is called after recordVal function is finished.
 /// This function will call the function to record the value to database.
 function cb(vals) {
 	// Needs database obj (vals) and database model (T002)
 	recToDatabase(vals, T002)
 }
 
-setInterval(function() {
-	recordVal(cb);
-}, config.intervalTimeToGetData);
-
-
 /// Use body-parser for getting data from a POST
 app.use(bodyParser.urlencoded({extended: true}));	// parse application/x-www-form-urlencoded
 app.use(bodyParser.json());												// parse application/json
 
-
-/// Routes for API
-var router = express.Router();
+var router = express.Router();	// routes for API
+app.use('/api', router);				// all routes will be prefixed with /api
 
 /// Router Middleware
 router.use(function routerMWare(req, res, next) {
@@ -51,42 +45,12 @@ router.get('/', function(req, res) {
 	res.json({message: 'Welcome to Nasdaq Values'});
 });
 
-/// Routes for accessing NASDAQ Values
-router.route('/T002')
-	.post(function(req, res) {
-		console.log('entering creating a T002');
-		var t002 = new T002();
-		t002.value = req.body.value;
-		t002.change = req.body.change;
-		t002.percentchange = req.body.percentchange;
-		if (t002.change < 0) {
-			t002.percentchange *= -1;
-		}
 
-		console.log(t002);
+///============================================================================
+/// START: Routes for accessing NASDAQ Values
+///----------------------------------------------------------------------------
 
-		/// Save the t002 and check for errors
-		t002.save(function(err) {
-			if (err) {
-				res.send(err); 
-			}
-			else {
-				res.json({message: 'T002 created!'});
-			}
-		});
-	})
-
-	.get(function(req, res) {
-		T002.find(function(err, t002s) {
-			if (err) {
-				res.send(err);
-			}
-			else {
-				res.json(t002s);
-			}
-		});
-	});
-
+/// GET all records
 router.route('/T002/all')
 	.get(function(req, res) {
 		T002.find(function(err, t002s) {
@@ -99,6 +63,7 @@ router.route('/T002/all')
 		});
 	});
 
+/// GET the latest values
 router.route('/T002/latest')
 	.get(function(req, res) {
 		T002.find(function(err, t002s) {
@@ -111,29 +76,75 @@ router.route('/T002/latest')
 		});
 	});
 
+/// POST for records between two datetimes
+router.route('/T002/daterange')
+	.post(function(req, res) {
 
-/// All routes will be prefixed with /api
-app.use('/api', router);
+		var fromDT	= !!req.body.from ? new Date(req.body.from) : new Date('1970');
+		var toDT 		= !!req.body.to   ? new Date(req.body.to)   : new Date();
 
-/// Set database and start the server
-var db, port;
+		console.log('from:', fromDT);
+		console.log('to:', toDT);
+
+
+		/// Find ... and check for errors
+		T002.find({
+			date: {
+				$gte: fromDT,
+				$lte: toDT
+			}
+		}, function(err, t002s) {
+			if (err) {
+				res.send(err); 
+			}
+			else {
+				res.json(t002s);
+			}
+		});
+	})
+
+/// Set port and database to connect
+var dbc, port;
 if (process.env.NODE_ENV === 'test') {
-	db = mongoose.connect(config.test_db);
+	dbc = config.test_db;
 	port = config.test_port;
 }
 else {
 	app.use(morgan('dev'));		// log every request to the console
-	db = mongoose.connect(config.db);
+	dbc = config.db;
 	port = config.port;
 
-	// Check database connection
-	mongoose.connection.on('connected', function() {
-		console.log('Mongoose default connection is open to', (process.env.NODE_ENV === 'test' ? config.test_db : config.db));
-	});
 }
+
+///----------------------------------------------------------------------------
+/// END: Routes for accessing NASDAQ Values
+///============================================================================
+
+
+/// Connect to database
+mongoose.connect(dbc);
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'database connection error:'));
+db.on('connected', function() {
+	console.log('Mongoose default connection is open to', dbc);
+});
+db.once('open', function() {
+	console.log('The database is connected');
+
+	/// Retrieve and store NASDAQ values to database periodically
+	setInterval(function() {
+		recordVal(cb);
+	}, config.intervalTimeToGetData);
+});
+
+/// Start server
 app.listen(port, function(err) {
-	if (err) console.log(err);
-	console.log('Server is listening on port', port);
+	if (err) {
+		console.error(err);
+	}
+	else {
+		console.log('Server is listening on port', port);
+	}
 });
 
 // Export server

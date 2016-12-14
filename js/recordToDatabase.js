@@ -3,8 +3,6 @@
 function recordToDatabase(vals, dbModel) {
 	if (!dbModel) return;
 
-	console.log('save to database:', vals);
-
 	var dbObj = new dbModel();
 	dbObj.value = vals.value;
 	dbObj.change = vals.change;
@@ -12,12 +10,12 @@ function recordToDatabase(vals, dbModel) {
 	dbObj.date = vals.date;
 
 	/// Save the dbObj and check for errors
-	dbObj.save(function(err) {
+	dbObj.save(function(err, dbObj) {
 		if (err) {
-			console.log(err); 
+			console.error(err); 
 		}
 		else {
-			console.log({message: 'dbObj created!'});
+			console.log({message: dbObj + ' saved to database!'});
 		}
 	});
 
