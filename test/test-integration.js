@@ -16,3 +16,12 @@ describe('GET /api/T002/lastest', function() {
 			.expect(200, done);
 	});
 });
+
+describe('GET /api/T002/daterange', function() {
+	it('should respond with "Status 200 OK"', function(done) {
+		request(app)
+			.get('/api/T002/daterange')
+			.expect(200, done);
+	});
+});
+

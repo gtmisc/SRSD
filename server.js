@@ -78,16 +78,11 @@ router.route('/T002/latest')
 
 /// POST for records between two datetimes
 router.route('/T002/daterange')
-	.post(function(req, res) {
+	.get(function(req, res) {
+		var fromDT	= !!req.query.from ? new Date(req.query.from) : new Date('1970');
+		var toDT 		= !!req.query.to   ? new Date(req.query.to)   : new Date();
 
-		var fromDT	= !!req.body.from ? new Date(req.body.from) : new Date('1970');
-		var toDT 		= !!req.body.to   ? new Date(req.body.to)   : new Date();
-
-		console.log('from:', fromDT);
-		console.log('to:', toDT);
-
-
-		/// Find ... and check for errors
+		/// Find in database and check for errors
 		T002.find({
 			date: {
 				$gte: fromDT,
