@@ -4,24 +4,24 @@ var sinon		= require('sinon');
 var app		= require('../server');
 
 /// Get the model
-var T002 = require('../models/t002');
+var nasdaq = require('../models/nasdaq');
 
 describe('ROUTES: ', function() {
-	it('/api/T002/all should respond with "Status 200 OK"', function(done) {
+	it('/api/nasdaq/all should respond with "Status 200 OK"', function(done) {
 		request(app)
-			.get('/api/T002/all')
+			.get('/api/nasdaq/all')
 			.expect(200, done);
 	});
 
-	it('/api/T002/latest should respond with "Status 200 OK"', function(done) {
+	it('/api/nasdaq/latest should respond with "Status 200 OK"', function(done) {
 		request(app)
-			.get('/api/T002/latest')
+			.get('/api/nasdaq/latest')
 			.expect(200, done);
 	});
 
-	it('/api/T002/daterange should respond with "Status 200 OK"', function(done) {
+	it('/api/nasdaq/daterange should respond with "Status 200 OK"', function(done) {
 		request(app)
-			.get('/api/T002/daterange')
+			.get('/api/nasdaq/daterange')
 			.expect(200, done);
 	});
 });

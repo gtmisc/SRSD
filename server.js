@@ -7,10 +7,10 @@ var config			= require('./app/config');
 
 /// Use MongoDB
 var mongoose = require('mongoose');
-var T002 = require('./models/t002');	// the defined Nasdaq Value model
+var nasdaq = require('./models/nasdaq');	// the defined Nasdaq Value model
 
 var app = express();
-var controller	= require('./app/controller')(T002);
+var controller	= require('./app/controller')(nasdaq);
 
 
 /// Do request Nasdaq Value
@@ -26,8 +26,8 @@ function recordVal(cb) {
 /// Callback function that is called after recordVal function is finished.
 /// This function will call the function to record the value to database.
 function cb(vals) {
-	// Needs database obj (vals) and database model (T002)
-	recToDatabase(vals, T002)
+	// Needs database obj (vals) and database model (nasdaq)
+	recToDatabase(vals, nasdaq)
 }
 
 /// Use body-parser for getting data from a POST
@@ -53,13 +53,13 @@ router.get('/', function(req, res) {
 ///----------------------------------------------------------------------------
 
 /// GET all records
-router.route('/T002/all').get(controller.getAllRecords);
+router.route('/nasdaq/all').get(controller.getAllRecords);
 
 /// GET the latest values
-router.route('/T002/latest').get(controller.getLatestRecord);
+router.route('/nasdaq/latest').get(controller.getLatestRecord);
 
 /// GET all records between two datetimes
-router.route('/T002/daterange').get(controller.getRecordsRange);
+router.route('/nasdaq/daterange').get(controller.getRecordsRange);
 
 ///----------------------------------------------------------------------------
 /// END: Routes for accessing NASDAQ Values

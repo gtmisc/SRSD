@@ -1,9 +1,9 @@
 /// For generating test data
 
-var T002 = require('../models/t002');
+var nasdaq = require('../models/nasdaq');
 
 module.exports.genRecord = function(value, change, date) {
-  return new T002 ({
+  return new nasdaq ({
     value: value,
     change: change,
     percentchange: change*100/value,

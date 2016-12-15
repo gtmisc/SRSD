@@ -2,18 +2,18 @@
 var sinon     = require('sinon');
 var assert    = require('chai').assert;
 
-var T002 = require('../models/t002');
+var nasdaq = require('../models/nasdaq');
 var factory = require('./factory-test-records');
-var controller  = require('../app/controller')(T002);
+var controller  = require('../app/controller')(nasdaq);
 
 describe('controller', function () {
 
   beforeEach(function () {
-    sinon.stub(T002, 'find');
+    sinon.stub(nasdaq, 'find');
   });
 
   afterEach(function () {
-    T002.find.restore();
+    nasdaq.find.restore();
   });
 
   var records = [];
@@ -24,7 +24,7 @@ describe('controller', function () {
   }
 
   it('getAllRecords', function (done) {
-    T002.find.yields(null, records);
+    nasdaq.find.yields(null, records);
     var req = { params: {} };
     var res = {
       json: sinon.stub()
@@ -35,7 +35,7 @@ describe('controller', function () {
   });
 
   it('getLatestRecord', function (done) {
-    T002.find.yields(null, records);
+    nasdaq.find.yields(null, records);
     var req = { params: {} };
     var res = {
       json: sinon.stub()
@@ -46,7 +46,7 @@ describe('controller', function () {
   });
 
   it('getRecordsRange without from and to parameters', function (done) {
-    T002.find.yields(null, records);
+    nasdaq.find.yields(null, records);
     var req = {
       query: {
         // from: '2016-01-15T00:00:00.000Z', 
