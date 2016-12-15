@@ -2,13 +2,10 @@ var mongoose	= require('mongoose');
 
 /// Define schema for NASDAQ Values
 var t002Schema = new mongoose.Schema({
-	value: Number,
-	change: Number,
-	percentchange: Number,
-	date: {
-		type: Date,
-		default: Date.now
-	}
+	value: { type: Number, required: true },
+	change: { type: Number, required: true },
+	percentchange: { type: Number, required: true },
+	date: { type: Date, default: Date.now	}
 });
 
 t002Schema.method('getValue', function (cb) {
