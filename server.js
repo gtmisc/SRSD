@@ -3,13 +3,15 @@ var express			= require('express');
 var bodyParser	= require('body-parser');
 var morgan			= require('morgan');
 
-var config = require('./app/config');
+var config			= require('./app/config');
 
 /// Use MongoDB
 var mongoose = require('mongoose');
 var T002 = require('./models/t002');	// the defined Nasdaq Value model
 
 var app = express();
+var controller	= require('./app/controller')(T002);
+
 
 /// Do request Nasdaq Value
 var reqNasdaqVal = require('./js/get-nasdaq.js');
@@ -51,52 +53,17 @@ router.get('/', function(req, res) {
 ///----------------------------------------------------------------------------
 
 /// GET all records
-router.route('/T002/all')
-	.get(function(req, res) {
-		T002.find(function(err, t002s) {
-			if (err) {
-				res.send(err);
-			}
-			else {
-				res.json(t002s);
-			}
-		});
-	});
+router.route('/T002/all').get(controller.getAllRecords);
 
 /// GET the latest values
-router.route('/T002/latest')
-	.get(function(req, res) {
-		T002.find(function(err, t002s) {
-			if (err) {
-				res.send(err);
-			}
-			else {
-				res.json(t002s[t002s.length - 1]);
-			}
-		});
-	});
+router.route('/T002/latest').get(controller.getLatestRecord);
 
-/// POST for records between two datetimes
-router.route('/T002/daterange')
-	.get(function(req, res) {
-		var fromDT	= !!req.query.from ? new Date(req.query.from) : new Date('1970');
-		var toDT 		= !!req.query.to   ? new Date(req.query.to)   : new Date();
+/// GET all records between two datetimes
+router.route('/T002/daterange').get(controller.getRecordsRange);
 
-		/// Find in database and check for errors
-		T002.find({
-			date: {
-				$gte: fromDT,
-				$lte: toDT
-			}
-		}, function(err, t002s) {
-			if (err) {
-				res.send(err); 
-			}
-			else {
-				res.json(t002s);
-			}
-		});
-	})
+///----------------------------------------------------------------------------
+/// END: Routes for accessing NASDAQ Values
+///============================================================================
 
 /// Set port and database to connect
 var dbc, port;
@@ -110,11 +77,6 @@ else {
 	port = config.port;
 
 }
-
-///----------------------------------------------------------------------------
-/// END: Routes for accessing NASDAQ Values
-///============================================================================
-
 
 /// Connect to database
 mongoose.connect(dbc);
