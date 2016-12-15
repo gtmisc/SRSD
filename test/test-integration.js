@@ -1,27 +1,27 @@
 var request = require('supertest');
-app = require('../server');
+var expect	= require('chai').expect;
+var sinon		= require('sinon');
+var app		= require('../server');
 
-describe('GET /api/T002/all', function() {
-	it('should respond with "Status 200 OK"', function(done) {
+/// Get the model
+var T002 = require('../models/t002');
+
+describe('ROUTES: ', function() {
+	it('/api/T002/all should respond with "Status 200 OK"', function(done) {
 		request(app)
 			.get('/api/T002/all')
 			.expect(200, done);
 	});
-});
 
-describe('GET /api/T002/lastest', function() {
-	it('should respond with "Status 200 OK"', function(done) {
+	it('/api/T002/latest should respond with "Status 200 OK"', function(done) {
 		request(app)
 			.get('/api/T002/latest')
 			.expect(200, done);
 	});
-});
 
-describe('GET /api/T002/daterange', function() {
-	it('should respond with "Status 200 OK"', function(done) {
+	it('/api/T002/daterange should respond with "Status 200 OK"', function(done) {
 		request(app)
 			.get('/api/T002/daterange')
 			.expect(200, done);
 	});
 });
-
