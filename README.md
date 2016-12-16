@@ -1,6 +1,6 @@
 # SRSD
 SRSD (Search Record Serve Data) is a Node.js application that serves NASDAQ values scraped from www.nasdaq.com periodically.
-The database is MongoDB which can be a local or the remote one (set in ./app/config.js).
+The database is MongoDB which can be a local (see [Install MongoDB](https://docs.mongodb.com/manual/installation/)) or the remote one.  The setting is located in **./app/config.js**.
 The remote database is served by [mLab](https://mlab.com/home).
 
 
