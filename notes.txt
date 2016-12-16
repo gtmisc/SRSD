@@ -1,12 +1,9 @@
+Get Data from NASDAQ.com
+
 POST
 http://www.nasdaq.com/
 http://www.nasdaq.com/aspx/IndexData.ashx
 
-nasdaqHomeIndexChart.storeIndexInfo("NASDAQ",
-
-
+Extract values from the examples below
 nasdaqHomeIndexChart.storeIndexInfo("NASDAQ","5425.98","-18.52","0.34","353,700,283","5434.90","5414.69");
-nasdaqHomeIndexChart.storeIndexInfo("NASDAQ","5430.84","-13.66","0.25","331,285,212","5434.90","5414.69");
 nasdaqHomeIndexChart.storeIndexInfo("NASDAQ","5433.59","-10.91","0.20","305,883,718","5434.39","5414.69");
- 
- 
